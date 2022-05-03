@@ -33,6 +33,9 @@ const KeypressHandler = React.memo(({ children }) => {
                 case "ArrowDown":
                     setKeypress((old) => [...old, "down"])
                     break;
+                case "z":
+                    setKeypress((old) => [...old, "undo"])
+                    break;
                 default:
                      console.log("lastPress:", presses[presses.length - 1])
                     break;

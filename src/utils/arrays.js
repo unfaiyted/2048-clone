@@ -24,7 +24,7 @@ export const createGrid = (width, height, startingFilled = 2) => {
 
         for(let h=0; h< height; h++) {
 
-            const current = (w+1)*(h+1)
+            const current = (w+1)*(h+1);
 
             const setStartingValue = (startingFilled > 0 && percentChanceBoolean(0.2 + (current/totalSize)));
             // starts at 20% chance and goes up each item until its 100%

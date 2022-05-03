@@ -2,8 +2,9 @@ import GridItem from "../components/grid-item";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import { gridState, keypressState } from "../utils/atoms";
 import { createGrid } from '../utils/arrays'
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import KeypressHandler from "../components/keypress"
+import {percentChanceBoolean} from "../utils/numbers";
 
 
 
@@ -14,109 +15,137 @@ const GridContainer = ({gridHeight = 4, gridWidth = 4, initialBlocks = 2}) => {
     const setGrid = useSetRecoilState(gridState);
     const presses = useRecoilValue(keypressState);
 
+    const [moveCount, setMoveCount] = useState(0);
 
-    // On initial mount
-    useEffect(() => {
 
-        // initial grid setup
-        //setGrid((old) => [createGrid(gridWidth, gridHeight)]);
 
-        // console.log("gridItems.length:", gridItems.length)
-        //
-        //
-        //
-        // for(let i = 0; i < totalItems; i++) {
-        //
-        //     // Sets the starting value if the initialBlocks > 0 and if the random change is true too
-        //     const setStartingValue = (initialBlocks > 0 && percentChanceBoolean(0.2 + (i/totalItems)));
-        //     // starts at 20% chance and goes up each item until its 100%
-        //
-        //
-        //     // console.log("setStartingValue:", setStartingValue)
-        //
-        //     // Finds the Y axis grid position
-        //     const initY = Math.floor((i / gridWidth));
-        //
-        //     //(16) % 4
-        //     // finds the x position initally on the grid.
-        //     const initX = (i % gridHeight)
-        //
-        //     // console.log("initX, initY :", initX, initY);
-        //     const initialValue = (!!(setStartingValue)) ? 2 : 0;
-        //
-        //     const gridItem = {
-        //         initialValue,
-        //         key: i,
-        //         x: initX,
-        //         y: initY
-        //     };
-        //
-        //
-        //     console.log("add counter", i)
-        //         console.log("gridItem.length:", gridItems.length)
-        //         setGridItems( (old) => [...old, gridItem ])
-        //
-        //     if(initialValue) {
-        //         console.log("gridItemsHolder:", gridItems)
-        //         console.log("initialBlocks:", initialBlocks)
-        //         console.log("setStartingValue, initialValue:", setStartingValue, initialValue)
-        //         console.log("(setStartingValue && initialBlocks > 0), i, initX, initY :", !!(setStartingValue), i, initX, initY);
-        //      }
-        //
-        //     if(setStartingValue) initialBlocks--;
-        // }
+    // User presses Key
+    useEffect( () => {
 
-    },[])
+        const lastPress = presses[presses.length - 1]
 
-    useEffect(() => {
-
-        if(presses.length > 0) {
-            console.log("presses has changed");
-
-            const lastPress = presses[presses.length - 1]
+        if(presses.length > 0 && lastPress != "undo") {
 
             console.log("lastPress :", lastPress);
 
+            let tempGrid = JSON.parse(JSON.stringify(grid));
 
-            for (let h = 0; h < gridHeight; h++) { // y
-                for (let w = 0; w < gridWidth; w++) { // x
 
-                    // w = x, y = h ?
-                    const totalMoves = canMove(lastPress, w, w)
+            // move right -> means start at right most elements
+            // go from (x,y) 0,3 -> 0,0
+
+            // go left ->
+            // go from 0,0 -> 0,3
+
+            //go up
+            // 0,0 -> 3,0 // 0,1 => 3,1
+
+
+            //go down
+            // 3,0 => 0,0
+
+            for (let x = 0; x < gridWidth; x++) { // y  0->3
+                for (let y = 0; y < gridHeight; y++) { // x 0->3
+
+                    const totalMoves = canMove(tempGrid, lastPress, x, y);
 
                     if(totalMoves > 0) {
-                        console.log("x,y :", h,w);
-                        console.log("totalMoves:", totalMoves)
-                        console.log("grid[0][h,w]:", grid[h][w])
 
-
-                        let tempGrid = JSON.parse(JSON.stringify(grid));
+                        console.log("totalMoves, x, y :", totalMoves, x, y);
 
                         console.log("tempGrid:", tempGrid)
 
-                        tempGrid[h][w+totalMoves] = grid[h][w];
+                        const isNegative = (lastPress === "down" || lastPress === "right") ? -1 : 1;
+
+                        let getX = (lastPress === "down" || lastPress === "up")    ? x - (totalMoves * isNegative) : x;
+                        let getY = (lastPress === "left" || lastPress === "right") ? y - (totalMoves * isNegative) : y;
+
+                        console.log("isNegative :", isNegative);
+                        console.log("getX, getY :", getX, getY);
+
+
+                        if(tempGrid[getX][getY] === tempGrid[x][y]) {
+                            tempGrid[getX][getY] = tempGrid[getX][getY] + tempGrid[x][y];
+                        } else {
+                            console.log("tempGrid[getX][getY], grid[x][y] :", tempGrid[getX][getY], tempGrid[x][y]);
+                            tempGrid[getX][getY] = tempGrid[x][y];
+                        }
+
+                        tempGrid[x][y] = 0;
 
                         console.log("tempGridNeW:", tempGrid);
 
 
-                        setGrid((old) => [tempGrid, ...old])
-
-
-                         // grid[0][0,0] = 1;
-                        // setGrid((old) => [, old]);
 
                         }
 
                 }
-
             }
+
+            tempGrid = createNewBlock(tempGrid);
+
+            setGrid((old) => [tempGrid, ...old])
+            setMoveCount(moveCount+1);
+
+
+            console.log("Complete Moving");
+
+           // createNewBlock();
 
         }
 
+        if (lastPress === "undo") {
+            setGrid( (old) => {
+                console.log("old:", old)
+                return [...old.filter((i,index) => index !== 0)]
+            })
+        }
 
-        
     },[presses.length])
 
+
+    // useEffect(() => {
+    //     setTimeout(()=> {
+    //         createNewBlock();
+    //         console.log("is complete?")
+    //     }, 250)
+    //
+    //
+    // },[moveCount])
+
+
+
+    const createNewBlock = (tempGrid, maxValue = 4) => {
+
+        //1. get grid, check for empty spot in grid
+        //2. create a new block in empty spot.
+
+        const totalSize = gridHeight*gridWidth;
+
+        let setBlock = false;
+
+        for (let y = 0; y < gridHeight; y++) { // y
+            for (let x = 0; x < gridWidth; x++) { // x
+
+                const current = (x+1)*(y+1);
+
+                if(tempGrid[x][y] === 0 && percentChanceBoolean(0.2 + (current/totalSize))) {
+                    // starts at 20% chance and goes up each item until its 100%
+
+                    // console.log("initX, initY :", initX, initY);
+                    const initialValue = (percentChanceBoolean(0.5)) ? 2 : maxValue;
+
+                    tempGrid[x][y] = initialValue;
+                    setBlock = true;
+                    break;
+
+                }
+            }
+
+            if(setBlock === true) break;
+        }
+        return tempGrid;
+    }
 
     /**
      *
@@ -125,59 +154,50 @@ const GridContainer = ({gridHeight = 4, gridWidth = 4, initialBlocks = 2}) => {
      * @param y
      * @returns {number}
      */
-    const canMove = (direction, x, y) => {
-
+    const canMove = (tempGrid, direction, x, y) => {
+        console.log("direction, x, y :", direction, x, y);
+        
         if(grid[x][y] === 0) return 0;
         // 1. get surrounding boxes
         // 2. up, left, right, down
         // 3. find out intended movement direction
 
         const totalSpace = (dir, x,y) => {
+
             let moves = 0;
-            let movingAxis = y;
+            let movingAxis = (dir === "left" || dir === "right") ? "y" : "x";
+            let isNegativeDirection = (dir === "left" || dir === "up") ? 1 : -1;
 
 
-            if(dir === "left" || dir == "right") {
-                movingAxis = x;
-            }
+            console.log("isNegativeDirection :", isNegativeDirection);
+                // left means we change the x value down
+                // up means we change the y value down
 
-            if(dir === "left" || dir === "up") {
-                movingAxis--;
+                console.log("movingAxis:", movingAxis)
 
-                while(movingAxis >= 0) {
+                let offset = 1;
 
-                    const getX = (dir === "left") ? movingAxis : x;
-                    const getY = (dir === "up") ? movingAxis : y;
+                while(offset >= 1 && offset <= (gridWidth-1)) {
 
-                       if(grid[getX][getY] === 0) moves++;
-                       if(grid[getX][getY] !== 0) break;
+                    let getX = (movingAxis === "x") ? x - (offset*isNegativeDirection) : x;
+                    let getY = (movingAxis === "y") ? y - (offset*isNegativeDirection) : y;
 
-                    movingAxis--;
+                    console.log("getX, getY, gridXY :", getX, getY, tempGrid?.[getX]?.[getY]);
+
+                    if(tempGrid?.[getX]?.[getY] === undefined) break;
+
+                    if(tempGrid[getX][getY] === 0) moves++;
+                    if(tempGrid[getX][getY] === tempGrid[x][y]) {
+                        moves++;
+                        break;
+                    }
+                    // if(grid[x][y] !== grid[getX][getY]) break;
+
+                    offset++;
                 }
 
-            }
+                console.log("moves, x,y :", moves, x,y);
 
-            if(dir === "right" || dir === "down") {
-
-                console.log("dir :", dir);
-                movingAxis++; // grab next y or x axis.
-
-                console.log("movingAxis (y) >= gridWidth :", movingAxis, gridWidth);
-
-                while(movingAxis > gridWidth) {
-
-                    const getX = (dir === "right") ? movingAxis : x;
-                    const getY = (dir === "down") ? movingAxis : y;
-
-                    console.log("getX:", getX, "getY: ",getY)
-
-                    if(grid[getX][getY] === 0) moves++;
-                    if(grid[getX][getY] !== 0) break;
-
-                    movingAxis++;
-                }
-
-            }
 
             return moves;
         }
@@ -192,25 +212,25 @@ const GridContainer = ({gridHeight = 4, gridWidth = 4, initialBlocks = 2}) => {
         switch (direction) {
             case "left":
                 //one to left
-                if(x === 0) return 0;
+                if(y === 0) return 0;
                 return totalSpace(direction, x,y)
                 break;
             case "right":
                 //one right
-                if(x === (gridWidth-1)) return 0;
+                if(y === (gridWidth-1)) return 0;
 
                 return totalSpace(direction, x,y)
 
                 break;
             case "up":
-                if(y === 0) return 0;
+                if(x === 0) return 0;
                 // one above
                 return totalSpace(direction, x,y)
 
                 break;
             case "down":
                 //one below
-                if(y === (gridHeight-1)) return 0;
+                if(x === (gridHeight-1)) return 0;
                 return totalSpace(direction, x,y)
                 break;
             default:
@@ -220,28 +240,16 @@ const GridContainer = ({gridHeight = 4, gridWidth = 4, initialBlocks = 2}) => {
         return 0;
     }
 
-    const addNewBlock = () => {
-
-    }
-
-    // console.log(gridItems)
-
-    // console.log(grid, grid[grid.length-1])
 
     return (
 
     <div className="container">
 
         { grid.map((row, rowIndex) => {
-
-            console.log("row:", row)
-
-
-            
             return row.map((item, colIndex) => {
-                console.log("item :", item);
+                let key = (rowIndex + 1) * (colIndex + 1);
                 return <GridItem
-                    key={(rowIndex*colIndex)}
+                    key={(key)}
                     initialValue={item}
                     initialLocation={{rowIndex, colIndex}}
                 />
