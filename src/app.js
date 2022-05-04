@@ -1,4 +1,4 @@
-import './App.css';
+import './css/App.css';
 import {RecoilRoot} from "recoil";
 import KeypressHandler from "./components/keypress";
 import GridContainer from "./containers/grid-container";

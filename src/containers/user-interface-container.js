@@ -1,4 +1,4 @@
-
+import PropTypes from "prop-types";
 
 const UserInterfaceContainer = ({children}) =>  {
     return (
@@ -8,6 +8,10 @@ const UserInterfaceContainer = ({children}) =>  {
         </div>
 
     )
+}
+
+UserInterfaceContainer.propTypes = {
+    children: PropTypes.node
 }
 
 export default UserInterfaceContainer;

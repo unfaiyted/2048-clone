@@ -4,8 +4,9 @@ import { gridState, keypressState } from "../utils/atoms";
 import {useEffect, useState} from "react";
 import {createNewBlock, performValidMove} from "../utils/game-logic";
 import {KEYPRESS} from "../utils/constants";
+import PropTypes from "prop-types";
 
-const GridContainer = ({gridHeight = 4, gridWidth = 4, initialBlocks = 2}) => {
+const GridContainer = ({gridHeight = 4, gridWidth = 4}) => {
 
     let grid = useRecoilValue(gridState)[0];
     const setGrid = useSetRecoilState(gridState);
@@ -110,8 +111,8 @@ const GridContainer = ({gridHeight = 4, gridWidth = 4, initialBlocks = 2}) => {
                 let key = (rowIndex + 1) * (colIndex + 1);
                 return <GridItem
                     key={(key)}
-                    initialValue={item}
-                    initialLocation={{rowIndex, colIndex}}
+                    value={item}
+                    homeLocation={{x: rowIndex,  y: colIndex}}
                 />
             });
 
@@ -119,5 +120,9 @@ const GridContainer = ({gridHeight = 4, gridWidth = 4, initialBlocks = 2}) => {
     </div>)
 }
 
+GridContainer.propTypes = {
+    gridHeight: PropTypes.number,
+    gridWidth: PropTypes.number
+}
 
 export default GridContainer;

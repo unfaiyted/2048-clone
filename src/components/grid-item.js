@@ -1,24 +1,43 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import {useState} from "react";
 import {COLORS} from "../utils/constants";
+import { animated } from '@react-spring/web';
 
 
-export const GridItem = ({  initialLocation: { x:initX  , y:initY }, initialValue}) => {
 
-    const [location,setLocation] = useState({x:initX, y:initY})
+export const GridItem = ({  homeLocation: { x  , y }, value}) => {
+
+    const [location] = useState({x, y})
 
     const customStyle = {
-        backgroundColor: COLORS.get((initialValue) ? initialValue : null)
+        backgroundColor: COLORS.get((value) ? value : null)
     }
 
-    return (<div className="grid-item"
+    // tell this piece to move at the app coordinate
+
+    return (
+        <animated.div>
+            <div className="grid-item"
                  style={customStyle}
-                 data-initial={initialValue}
+                 data-value={value}
                  data-x={location.x}
                  data-y={location.y}
-        >
-        {(initialValue) ? initialValue : " "}
-    </div>)
+            >
+                {(value) ? value : " "}
+
+                <div className="debug-grid-locations">{location.x},{location.y}</div>
+            </div>
+        </animated.div>
+        )
+}
+
+GridItem.propTypes = {
+    homeLocation: PropTypes.shape({
+        x: PropTypes.number,
+        y: PropTypes.number
+    }),
+    value: PropTypes.number
 }
 
 

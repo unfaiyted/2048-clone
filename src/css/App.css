@@ -58,6 +58,7 @@
 
   /*grid-column: 1 / 2;*/
   /*grid-row: 1 / 2;*/
+  position: relative;
   background-color: #cdc0b5;
   grid-template-columns:
   repeat(auto-fit, minmax(250px, 1fr));
@@ -97,4 +98,11 @@
   position: relative;
   margin-left: auto;
   margin-right: auto;
+}
+
+.debug-grid-locations {
+  position: absolute;
+  font-size: 10px;
+  left:5px;
+  bottom:5px;
 }

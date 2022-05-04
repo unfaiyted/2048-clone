@@ -1,5 +1,5 @@
-
 import ShadowItem from "../components/shadow-item";
+import PropTypes from "prop-types";
 
 
 const ShadowContainer = ({gridHeight = 4, gridWidth = 4}) => {
@@ -24,5 +24,9 @@ return (
     </div>)
 }
 
+ShadowContainer.propTypes = {
+    gridHeight: PropTypes.number,
+    gridWidth: PropTypes.number
+}
 
 export default ShadowContainer;

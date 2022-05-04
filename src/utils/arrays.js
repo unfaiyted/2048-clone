@@ -30,7 +30,7 @@ export const createGrid = (width, height, startingFilled = 2) => {
             // starts at 20% chance and goes up each item until its 100%
 
             // console.log("initX, initY :", initX, initY);
-            const initialValue = (!!(setStartingValue)) ? 2 : 0;
+            const initialValue = ((setStartingValue)) ? 2 : 0;
 
             grid[w][h] = initialValue;
             if(setStartingValue) startingFilled--;

@@ -1,4 +1,4 @@
-
+import PropTypes from "prop-types";
 
 const GameContainer = ({children}) =>  {
     return (
@@ -8,6 +8,10 @@ const GameContainer = ({children}) =>  {
         </div>
 
     )
+}
+
+GameContainer.propTypes = {
+    children: PropTypes.node
 }
 
 export default GameContainer;

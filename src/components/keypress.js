@@ -1,7 +1,7 @@
-import React,{useEffect, memo} from "react";
+import React,{useEffect} from "react";
 import {keypressState} from "../utils/atoms"
 import {useRecoilValue, useSetRecoilState} from "recoil";
-
+import PropTypes from "prop-types";
 
 const KeypressHandler = React.memo(({ children }) => {
     const presses = useRecoilValue(keypressState);
@@ -73,5 +73,10 @@ const KeypressHandler = React.memo(({ children }) => {
         {children}
     </React.Fragment>
 });
+KeypressHandler.displayName = "KeypressHandler";
+
+KeypressHandler.propTypes = {
+    children: PropTypes.node
+}
 
 export default KeypressHandler;
