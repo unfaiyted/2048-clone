@@ -166,7 +166,8 @@ export const performValidMove = (tempGrid, direction, x, y ) => {
             tempGrid[to.x][to.y] = tempGrid[from.x][from.y];
         } else {
             console.log("Attempted to move to block that is not empty or zero");
-            console.log("tempGrid[getX][getY] \"=\" tempGrid[x][y] :", tempGrid[to.x][to.y],"=",tempGrid[from.x][from.y]);
+            console.log("tempGrid[getX][getY] \"=\" tempGrid[x][y] :",
+                tempGrid[to.x][to.y],"=",tempGrid[from.x][from.y]);
         }
 
         tempGrid[from.x][from.y] = 0;
