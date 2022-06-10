@@ -78,12 +78,14 @@
 
 .grid-item.shadow {
   /*border: 1px solid green;*/
+  z-index: 1;
 }
 
 
 .container.shadow {
   position: absolute;
   aspect-ratio: 1/1;
+  z-index: 1;
   /*border: 1px solid red;*/
 }
 
@@ -105,4 +107,5 @@
   font-size: 10px;
   left:5px;
   bottom:5px;
+  display: none;
 }

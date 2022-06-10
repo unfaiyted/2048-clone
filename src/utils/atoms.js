@@ -19,6 +19,17 @@ export const gridState = atom({
 
 })
 
+export const gridItemManagerState = atom({
+    key: 'gridItemManagerState',
+    default: {
+        moving: 0,
+        resting: 0,
+        started: false,
+        pressIndex:1,
+        moveAnimationCompleted: false,
+    }
+})
+
 
 export const keypressState = atom({
     key: 'keypressState',
